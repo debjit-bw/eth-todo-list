@@ -21,6 +21,7 @@ App = {
             try {
                 // Request account access if needed
                 await ethereum.enable()
+                web3.eth.defaultAccount = web3.eth.accounts[0]
                 // Acccounts now exposed
                 web3.eth.sendTransaction({/* ... */ })
             } catch (error) {
@@ -51,6 +52,7 @@ App = {
         App.todoList = await App.contracts.TodoList.deployed()
     },
     render: async() => {
+        console.log("App rendering...")
         if (App.loading) {
             return
         }
@@ -64,6 +66,7 @@ App = {
         App.setLoading(false)
     },
     renderTasks: async () => {
+        console.log("App rendering tasks...")
         // Load the total task count from the blockchain
         const taskCount = await App.todoList.taskCount()
         const $taskTemplate = $('.taskTemplate')
@@ -94,6 +97,13 @@ App = {
             // Show the task
             $newTaskTemplate.show()
         }
+    },
+    createTask: async () => {
+        App.setLoading(true)
+        const content = $('#newTask').val()
+        console.log(content)
+        await App.todoList.createTask(content)
+        window.location.reload()
     },
     setLoading: (boolean) => {
         App.loading = boolean
